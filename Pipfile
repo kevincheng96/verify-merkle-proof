@@ -4,8 +4,11 @@ verify_ssl = true
 name = "pypi"
 
 [packages]
-eth-utils = "1.10.0"
+eth-utils = "*"
 web3 = ">=5"
+rlp = "*"
+eth-mpt = "*"
+cytoolz = ">=0.10.1"
 
 [dev-packages]
 
