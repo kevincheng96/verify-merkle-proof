@@ -1,6 +1,5 @@
 import json
 import rlp
-from mpt import MerklePatriciaTrie
 from web3 import Web3
 from web3.auto.infura import w3
 from eth_utils import remove_0x_prefix, to_int, to_checksum_address, to_hex, encode_hex, decode_hex, keccak
@@ -24,7 +23,7 @@ def getProof(i):
     storage_key = to_hex(w3.sha3(hexstr=key + pos))
     return w3.eth.getProof(CONTRACT_ADDRESS, [storage_key], 'latest')
 
-# working with bytes, not hex strings. only the key is a hex string, mainly for iterating through nibbles.
+# Working with bytes, not hex strings. Only the key is a hex string, mainly for iterating through nibbles.
 def _verify(expected_root, key, proof, key_index, proof_index, expected_value):
     ''' Iterate the proof following the key.
         Return True if the value at the leaf is equal to the expected value.
@@ -73,14 +72,14 @@ def _verify(expected_root, key, proof, key_index, proof_index, expected_value):
             # Even leaf node
             key_end = dec[0][1:].hex()
             # Decode the RLP-encoded value
-            value = encode_hex(rlp.decode(dec[1]))            
+            value = rlp.decode(dec[1])        
             if key_end == key[key_index:] and expected_value == value:
                 return True
         elif prefix == '3':
             # Odd leaf node
             key_end = nibble + dec[0][1:].hex()
             # Decode the RLP-encoded value
-            value = encode_hex(rlp.decode(dec[1]))
+            value = rlp.decode(dec[1])
             if key_end == key[key_index:] and expected_value == value:
                 return True
         # UNTESTED PATH
@@ -121,7 +120,8 @@ for i in range(0, 3):
         entire_proof = json.loads(Web3.toJSON(getProof(i)))
         print(entire_proof)
         storage_proof = entire_proof['storageProof'][0]
-        decoded_root = decode_hex(entire_proof['storageHash'])
-        hashed_key = remove_0x_prefix(to_hex(keccak(hexstr=storage_proof['key'])))
-        decoded_proofs = list(map(lambda x: decode_hex(x), storage_proof['proof']))
-        print(_verify(decoded_root, hashed_key, decoded_proofs, 0, 0, storage_proof['value']))
+        decoded_root = decode_hex(entire_proof['storageHash']) # bytes
+        hashed_key = remove_0x_prefix(to_hex(keccak(hexstr=storage_proof['key']))) # string
+        decoded_proofs = list(map(lambda x: decode_hex(x), storage_proof['proof'])) # bytes
+        decoded_value = decode_hex(storage_proof['value'])
+        print(_verify(decoded_root, hashed_key, decoded_proofs, 0, 0, decoded_value))
