@@ -108,9 +108,42 @@ def _verify(expected_root, key, proof, key_index, proof_index, expected_value):
             assert False
     return True if expected_value == b'' else False
 
+# def verify_proof(proofs, root_hash, key, expected_value):
+#     decoded_proofs = list(map(lambda x: decode_hex(x), storage_proof['proof']))
+#     storage = {}
+#     trie = MerklePatriciaTrie(storage)
+
+#     for node in decoded_proofs:
+#         trie.update(keccak(node), node)
+#     # trie.update(b'do', b'verb')
+#     # trie.update(b'dog', b'puppy')
+#     # trie.update(b'doge', b'coin')
+#     # trie.update(b'horse', b'stallion')
+#     print(root_hash)
+#     print(trie.root_hash())
+#     print(trie.get(key))
+
+#     # old_root = trie.root()
+#     # old_root_hash = trie.root_hash()
+
+#     # print("Root hash is {}".format(old_root_hash.hex()))
+
+#     # trie.delete(b'doge')
+
+#     # print("New root hash is {}".format(trie.root_hash().hex()))
+
+#     # trie_from_old_hash = MerklePatriciaTrie(storage, root=old_root)
+
+#     # print(trie_from_old_hash.get(b'doge'))
+
+#     # try:
+#     #     print(trie.get(b'doge'))
+#     # except KeyError:
+#     #     print('Not accessible in a new trie.')
+
 # First find the slot position `p` of mapping.
 # (For the COMP token, `balances` mapping is at slot 1, after the `allowances` mapping.)
-# Then, use the slot position and holder address to generate a storage key to ask the proof for .
+# Then, use the slot position and holder address to generate a storage key to ask the proof for.
 # COMP token contract code: https://etherscan.io/address/0xc00e94cb662c3520282e6f5717214004a7f26888#code
 for i in range(0, 3):
     val = getStorageAtIndex(i)
@@ -124,4 +157,5 @@ for i in range(0, 3):
         decoded_root = decode_hex(entire_proof['storageHash'])
         hashed_key = remove_0x_prefix(to_hex(keccak(hexstr=storage_proof['key'])))
         decoded_proofs = list(map(lambda x: decode_hex(x), storage_proof['proof']))
+        # print(verify_proof(storage_proof['proof'], entire_proof['storageHash'], decoded_key, decoded_value))
         print(_verify(decoded_root, hashed_key, decoded_proofs, 0, 0, storage_proof['value']))
